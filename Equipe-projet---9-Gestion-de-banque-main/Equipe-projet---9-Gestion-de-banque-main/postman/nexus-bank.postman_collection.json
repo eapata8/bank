@@ -1,0 +1,405 @@
+{
+  "info": {
+    "name": "Leon Bank API",
+    "description": "Collection complète pour l'API Leon Bank. Authentification par session cookie.\n\nURL de base : http://localhost:5000\n\nComptes de démonstration (mot de passe : Demo123!) :\n- admin@Leon.local — ADMIN\n- mod1@Leon.local  — MODÉRATEUR\n- user@Leon.local  — UTILISATEUR",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000", "type": "string" }
+  ],
+  "item": [
+
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@Leon.local\",\n  \"motDePasse\": \"Demo123!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Me (session courante)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/auth/me"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/auth/logout"
+          }
+        },
+        {
+          "name": "Créer un modérateur (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/moderateurs",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nouveau.mod@Leon.local\",\n  \"motDePasse\": \"Demo123!\",\n  \"prenom\": \"Nouveau\",\n  \"nom\": \"Moderateur\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Logs d'audit (admin)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logs?limit=20",
+              "query": [{ "key": "limit", "value": "20" }]
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Clients",
+      "item": [
+        {
+          "name": "Liste des clients",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/clients?search=",
+              "query": [{ "key": "search", "value": "", "description": "Recherche optionnelle" }]
+            }
+          }
+        },
+        {
+          "name": "Comptes d'un client",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/clients/1/comptes"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Comptes",
+      "item": [
+        {
+          "name": "Liste des comptes",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/comptes"
+          }
+        },
+        {
+          "name": "Types de compte",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/comptes/types"
+          }
+        },
+        {
+          "name": "Détail d'un compte",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/comptes/1"
+          }
+        },
+        {
+          "name": "Transactions d'un compte",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/comptes/1/transactions"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Virements",
+      "item": [
+        {
+          "name": "Liste des virements",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/virements?search=",
+              "query": [{ "key": "search", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Créer un virement",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/virements",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"compte_source_id\": 1,\n  \"compte_destination_id\": 2,\n  \"montant\": 500,\n  \"description\": \"Transfert test\"\n}"
+            },
+            "description": "Virement interne entre deux comptes identifiés par leur ID."
+          }
+        },
+        {
+          "name": "Virement externe (par coordonnées)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/virements/externe",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"compte_source_id\": 1,\n  \"numero_compte_dest\": \"6214 8820 1104\",\n  \"numero_institution_dest\": \"621\",\n  \"numero_transit_dest\": \"23815\",\n  \"montant\": 150,\n  \"description\": \"Remboursement loyer\"\n}"
+            },
+            "description": "Virement vers n'importe quel compte Leon Bank en saisissant ses coordonnées bancaires (numero_compte, institution, transit). Le champ swift_bic_dest est optionnel."
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Factures",
+      "item": [
+        {
+          "name": "Liste des factures",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/factures?search=",
+              "query": [{ "key": "search", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Détail d'une facture",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/factures/1"
+          }
+        },
+        {
+          "name": "Créer une facture (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/factures",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"client_id\": 1,\n  \"fournisseur\": \"Hydro Ottawa\",\n  \"reference_facture\": \"FAC-9999\",\n  \"description\": \"Electricite mars\",\n  \"montant\": 145.60,\n  \"date_emission\": \"2026-03-01\",\n  \"date_echeance\": \"2026-03-31\",\n  \"statut\": \"IMPAYEE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Payer une facture",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/factures/3/payer",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"compte_id\": 1\n}"
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Cartes de crédit",
+      "description": "Gestion des cartes de crédit. Création et actions de gestion réservées à l'ADMIN. Remboursement disponible pour UTILISATEUR et ADMIN. MODÉRATEUR en lecture seule.",
+      "item": [
+        {
+          "name": "Liste des cartes",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/cartes?search=",
+              "query": [
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Recherche par numéro, client, type ou statut (elevated uniquement)"
+                }
+              ]
+            },
+            "description": "UTILISATEUR : ses propres cartes. MODÉRATEUR/ADMIN : toutes les cartes avec recherche optionnelle."
+          }
+        },
+        {
+          "name": "Détail d'une carte",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/cartes/1",
+            "description": "Retourne le détail d'une carte. Accès limité pour UTILISATEUR."
+          }
+        },
+        {
+          "name": "Créer une carte (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/cartes",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"client_id\": 1,\n  \"type_carte\": \"VISA\",\n  \"last_four\": \"9999\",\n  \"limite_credit\": 5000,\n  \"date_expiration\": \"2028-12-31\"\n}"
+            },
+            "description": "Réservé à l'ADMIN. Le numero_compte (16 chiffres) et le CVV (3 chiffres) sont générés automatiquement. VISA commence par 4, MASTERCARD par 5."
+          }
+        },
+        {
+          "name": "Bloquer une carte (admin)",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/api/cartes/1/bloquer",
+            "description": "Passe le statut de la carte à BLOQUEE. Réservé à l'ADMIN."
+          }
+        },
+        {
+          "name": "Activer une carte (admin)",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/api/cartes/4/activer",
+            "description": "Passe le statut de la carte à ACTIVE. Réservé à l'ADMIN. La carte 4 (Lina) est BLOQUEE dans le seed."
+          }
+        },
+        {
+          "name": "Modifier la limite (admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/cartes/1/limite",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"limite_credit\": 8000\n}"
+            },
+            "description": "Modifie la limite de crédit d'une carte. Réservé à l'ADMIN."
+          }
+        },
+        {
+          "name": "Rembourser une carte",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/cartes/1/rembourser",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"compte_id\": 1,\n  \"montant\": 200\n}"
+            },
+            "description": "Rembourse une partie du solde utilisé depuis un compte CHEQUES ou EPARGNE actif. Disponible pour UTILISATEUR et ADMIN. MODÉRATEUR bloqué."
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Dépôts de chèques",
+      "description": "Soumission et vérification des dépôts de chèques. UTILISATEUR et ADMIN peuvent soumettre. MODÉRATEUR et ADMIN peuvent approuver ou rejeter.",
+      "item": [
+        {
+          "name": "Liste des dépôts",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/depots?search=",
+              "query": [{ "key": "search", "value": "", "description": "Recherche par numéro, banque, client ou statut (elevated uniquement)" }]
+            },
+            "description": "UTILISATEUR : ses propres dépôts. MODÉRATEUR/ADMIN : tous les dépôts avec recherche optionnelle."
+          }
+        },
+        {
+          "name": "Détail d'un dépôt",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/depots/1"
+          }
+        },
+        {
+          "name": "Soumettre un dépôt (utilisateur)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/depots",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"compte_id\": 1,\n  \"montant\": 500.00,\n  \"numero_cheque\": \"CHQ-0041\",\n  \"banque_emettrice\": \"TD Canada Trust\"\n}"
+            },
+            "description": "Soumet un chèque pour dépôt. Réservé à UTILISATEUR et ADMIN. Le dépôt est créé avec le statut EN_ATTENTE."
+          }
+        },
+        {
+          "name": "Approuver un dépôt (mod/admin)",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/api/depots/1/approuver",
+            "description": "Approuve un dépôt EN_ATTENTE. Crédite le compte et crée une transaction DEPOT. Réservé à MODÉRATEUR et ADMIN."
+          }
+        },
+        {
+          "name": "Rejeter un dépôt (mod/admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/depots/1/rejeter",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Chèque illisible\"\n}"
+            },
+            "description": "Rejette un dépôt EN_ATTENTE avec un motif optionnel. Réservé à MODÉRATEUR et ADMIN."
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Admin — Virements",
+      "description": "Insertion manuelle de virements et transferts forcés par l'administrateur. Les comptes sont identifiés par leurs coordonnées bancaires (numero_compte + institution + transit). Réservé à l'ADMIN.",
+      "item": [
+        {
+          "name": "Insérer un virement (par coordonnées)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/admin/virements",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numero_compte_source\": \"4821 3390 4521\",\n  \"numero_institution_source\": \"621\",\n  \"numero_transit_source\": \"10482\",\n  \"numero_compte_dest\": \"6214 8820 1104\",\n  \"numero_institution_dest\": \"621\",\n  \"numero_transit_dest\": \"23815\",\n  \"montant\": 500,\n  \"statut\": \"ACCEPTE\",\n  \"description\": \"Virement admin test\",\n  \"ajuster_soldes\": true\n}"
+            },
+            "description": "Insère un virement entre deux comptes identifiés par leurs coordonnées bancaires. Le backend résout les IDs via findAccountByCoords."
+          }
+        },
+        {
+          "name": "Transfert forcé (source par ID, dest par coordonnées)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/admin/virements/force",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"compte_source_id\": 1,\n  \"numero_compte_dest\": \"6214 8820 1104\",\n  \"numero_institution_dest\": \"621\",\n  \"numero_transit_dest\": \"23815\",\n  \"montant\": 1000,\n  \"description\": \"Correction urgente\"\n}"
+            },
+            "description": "Transfert forcé sans vérification de solde. Débite le compte source (ID) et crédite le compte destination (coordonnées). Crée le virement ACCEPTE et les deux transactions automatiquement."
+          }
+        },
+        {
+          "name": "Supprimer un virement (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/admin/virements/15",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reverser_soldes\": true\n}"
+            },
+            "description": "Supprime un virement. Si reverser_soldes=true et statut ACCEPTE, reverse les soldes des deux comptes et supprime les transactions associées."
+          }
+        }
+      ]
+    }
+
+  ]
+}
